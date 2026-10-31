@@ -1,0 +1,28 @@
+name: Daily Teacher Digest
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # Toshkent vaqti bilan 06:00 da ishga tushadi
+  workflow_dispatch: # O'zingiz xohlaganda qo'lda bosib tekshirib ko'rish uchun
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install google-generativeai requests
+
+      - name: Run script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python digest.py
